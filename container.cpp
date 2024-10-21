@@ -6,8 +6,6 @@
 // Afficher les éléments du container dans l’ordre croissant.
 // Prenez la liste : {5, 2, 9, 1, 5, 6}
 
-
-
 #include <iostream>
 #include <vector>
 #include <list>
@@ -20,6 +18,7 @@ void displayVector(std::vector<int>& vec)
 	{
 		std::cout << value << std::endl;
 	}
+	std::cout << "-------" << std::endl;
 }
 
 void displayList(std::list<int>& lst)
@@ -28,6 +27,7 @@ void displayList(std::list<int>& lst)
 	{
 		std::cout << value << std::endl;
 	}
+	std::cout << "-------" << std::endl;
 }
 
 void displaySet(std::set<int>& s)
@@ -61,10 +61,10 @@ int main()
 	std::sort(vec.begin(), vec.end()); 
 	lst.sort();
 
-	// afficher dans ordre croissant (mettre en commentaire pour voir un seul container spécifiquement)
+	// afficher dans ordre croissant
 	displayVector(vec);
-	//displayList(lst);
-	//displaySet(s);
+	displayList(lst);
+	displaySet(s);
 
 	return 0;
 
