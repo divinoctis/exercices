@@ -20,135 +20,134 @@
 //4 - Gestion de la capacité maximale de l'inventaire :
 //Ajoutez une capacité maximale à l'inventaire (par exemple, 100 unités de poids). Si l'ajout d'un item dépasse cette capacité, le programme doit refuser l'ajout et afficher un message d'erreur.
 //Implémentez une fonction pour optimiser l'inventaire en retirant les items les moins lourds jusqu'à ce que le poids total soit inférieur à la capacité maximale.
-
+// InventorySystem.cpp : Ce fichier contient la fonction 'main'. L'exécution du programme commence et se termine à cet endroit.
+//
 
 #include <iostream>
 #include <vector>
-#include <string>
 #include <algorithm>
-#include <numeric>
+#include <numeric> // Pour accumulate
 
-class Inventory
-{ // class pour initialiser l'inventaire et le poids des items
-private:
-    std::vector <std::pair<std::string, int>> items;
-    int maxCapacity;
+struct Item {
+    std::string nom;
+    int poids;
 
-public:
-    Inventory(int capacity) : maxCapacity(capacity) {}
-
-    void displayInventory() const
-    {
-        int totalWeight = 0;
-        std::cout << "Inventory items:" << std::endl;
-        for (const auto& item : items)
-        {      // affiche l'item ainsi que son poid
-            std::cout << " - " << item.first << " (Weight: " << item.second << ")" << std::endl;
-            totalWeight += item.second;
-        }
-        std::cout << "Total weight: " << totalWeight << "/" << maxCapacity << std::endl;
-    }
-
-    bool addItem(const std::string& name, int weight)
-    { // add item à l'inventaire
-        int currentWeight = getTotalWeight();
-
-        if (currentWeight + weight > maxCapacity)
-        { // si il n'y a plus d'espace
-            std::cout << "Cannot add " << name << ", weight exceeds the max capacity!" << std::endl;
-            return false;
-        }
-        items.push_back({ name, weight });
-        return true;
-    }
-
-    void removeItem(const std::string& name) // suppr item
-    {
-        auto rmItem = std::remove(items.begin(), items.end(), [&](const std::pair<std::string, int> item)
-            {
-            return item.first == name;
-            });
-
-        if (rmItem != items.end())
-        {
-            items.erase(rmItem, items.end());
-            std::cout << "Item " << name << " removed." << std::endl;
-        }
-    }
-
-    void findItem(const std::string& name) const // trouver un item et ses spécificités
-    {
-        auto iSearch = std::find(items.begin(), items.end(), [&](const std::pair<std::string, int>& item) {
-            return item.first == name;
-            });
-
-        if (iSearch != items.end())
-        {
-            std::cout << "Item found: " << iSearch->first << " Weight: " << iSearch->second << std::endl;
-        }
-        else
-        {
-            std::cout << "Item not found." << std::endl;
-        }
-
-    }
-
-    void sortItemByName() // tri par nom
-    {
-        std::sort(items.begin(), items.end(), [](const std::pair<std::string, int>& a, std::pair<std::string, int>& b) {
-            return a.first < b.first;
-            });
-    }
-
-    void sortItemByWeight(bool ascending = true) // tri par poids en ordre croissant
-    {
-        std::sort(items.begin(), items.end(), [&](const std::pair<std::string, int>& a, std::pair<std::string, int>& b) {
-            return ascending ? a.second < b.second : a.second > b.second;
-            });
-    }
-
-
-    int getTotalWeight() // pour calculer moyenne poids
-    {
-        return std::accumulate(items.begin(), items.end(), 0, [](int sum, std::pair<std::string, int>& item) {
-            return sum + item.second;
-            });
-    }
-
-
-
-
-
+    // Constructeur simple pour faciliter la création d'items
+    Item(const std::string& n, int p) : nom(n), poids(p) {}
 };
 
+void ajouterItem(std::vector<Item>& inventaire, const std::string& nom, int poids) {
+    inventaire.emplace_back(nom, poids);
+}
 
+void supprimerItem(std::vector<Item>& inventaire, const std::string& nom) {
+    inventaire.erase(
+        std::remove_if(inventaire.begin(), inventaire.end(),
+            [&](const Item& item) { return item.nom == nom; }),
+        inventaire.end());
+}
 
+void trouverItem(const std::vector<Item>& inventaire, const std::string& nom) {
+    auto it = std::find_if(inventaire.begin(), inventaire.end(),
+        [&](const Item& item) { return item.nom == nom; });
+    if (it != inventaire.end()) {
+        std::cout << "Item trouve : " << it->nom << ", Poids : " << it->poids << std::endl;
+    }
+    else {
+        std::cout << "Item " << nom << " non trouve." << std::endl;
+    }
+}
 
-int main() {
-    Inventory inventory(50); // capacité max
+void trierParNom(std::vector<Item>& inventaire) {
+    std::sort(inventaire.begin(), inventaire.end(),
+        [](const Item& a, const Item& b) { return a.nom < b.nom; });
+}
 
-    // items
-    inventory.addItem("Sword", 10);
-    inventory.addItem("Shield", 15);
-    inventory.addItem("Potion", 2);
-    inventory.addItem("Helmet", 5);
+void trierParPoids(std::vector<Item>& inventaire, bool decroissant = false) {
+    std::sort(inventaire.begin(), inventaire.end(),
+        [=](const Item& a, const Item& b) {
+            return decroissant ? a.poids > b.poids : a.poids < b.poids;
+        });
+}
 
-    // display
-    inventory.displayInventory();
+void filtrerItems(std::vector<Item>& inventaire, int seuil) {
+    inventaire.erase(
+        std::remove_if(inventaire.begin(), inventaire.end(),
+            [=](const Item& item) { return item.poids < seuil; }),
+        inventaire.end());
+}
 
-    // remove
-    inventory.removeItem("Potion");
+int poidsTotal(const std::vector<Item>& inventaire) {
+    return std::accumulate(inventaire.begin(), inventaire.end(), 0,
+        [](int total, const Item& item) {
+            return total + item.poids;
+        });
+}
 
-    // chercher
-    inventory.findItem("Shield");
+double poidsMoyen(const std::vector<Item>& inventaire) {
+    if (inventaire.empty()) return 0.0;
+    return static_cast<double>(poidsTotal(inventaire)) / inventaire.size();
+}
 
-    // sort
-    inventory.sortItemByName();
-    inventory.displayInventory();
+int nombreItemsPlusLourds(const std::vector<Item>& inventaire, int seuil) {
+    return std::count_if(inventaire.begin(), inventaire.end(),
+        [=](const Item& item) { return item.poids > seuil; });
+}
 
-    // sort poid (ascendant)
-    inventory.sortItemByWeight(true);
-    inventory.displayInventory();
+void optimiserInventaire(std::vector<Item>& inventaire, int capaciteMax) {
+    while (poidsTotal(inventaire) > capaciteMax) {
+        // Supprimer l'item le moins lourd
+        auto it = std::min_element(inventaire.begin(), inventaire.end(),
+            [](const Item& a, const Item& b) {
+                return a.poids < b.poids;
+            });
+        if (it != inventaire.end()) {
+            std::cout << "Suppression de l'item le moins lourd : " << it->nom << std::endl;
+            inventaire.erase(it);
+        }
+    }
+}
+
+int main()
+{
+    std::vector<Item> inventaire;
+
+    // Ajouter des items à l'inventaire
+    ajouterItem(inventaire, "Epee", 10);
+    ajouterItem(inventaire, "Bouclier", 15);
+    ajouterItem(inventaire, "Potion", 2);
+    ajouterItem(inventaire, "Armure", 25);
+
+    // Afficher les items
+    std::cout << "Inventaire initial : " << std::endl;
+    for (const auto& item : inventaire) {
+        std::cout << item.nom << " (Poids: " << item.poids << ")" << std::endl;
+    }
+
+    // Trier l'inventaire par poids
+    trierParPoids(inventaire);
+    std::cout << "\nInventaire trie par poids : " << std::endl;
+    for (const auto& item : inventaire) {
+        std::cout << item.nom << " (Poids: " << item.poids << ")" << std::endl;
+    }
+
+    // Supprimer un item
+    supprimerItem(inventaire, "Potion");
+    std::cout << "\nl'objet Potion a ete supprime" << std::endl;
+    // Afficher l'inventaire après suppression
+    std::cout << "\nInventaire apres suppression : " << std::endl;
+    for (const auto& item : inventaire) {
+        std::cout << item.nom << " (Poids: " << item.poids << ")" << std::endl;
+    }
+
+    // Optimiser l'inventaire (capacité maximale de 30)
+    optimiserInventaire(inventaire, 30);
+    std::cout << "\n L'inventaire à un poids de 30" << std::endl;
+    // Afficher l'inventaire optimisé
+    std::cout << "\nInventaire optimise : " << std::endl;
+    for (const auto& item : inventaire) {
+        std::cout << item.nom << " (Poids: " << item.poids << ")" << std::endl;
+    }
 
     return 0;
 }
