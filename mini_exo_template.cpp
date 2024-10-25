@@ -60,24 +60,54 @@ using namespace std;
 //	return 0;
 //}
 
-// EXO 3
+//// EXO 3
+//template <typename T>
+//T sumElements(const vector<T>& liste)
+//{
+//	return accumulate(liste.begin(), liste.end(), static_cast<T>(0));
+//}
+//
+//int main()
+//{
+//	vector<int> intList = { 1, 2, 3, 4, 5 };
+//	vector<float> floatList = { 1.1f, 2.2f, 3.3f };
+//
+//	cout << "Somme des entiers: " << sumElements(intList) << endl;
+//	cout << "Somme des floats: " << sumElements(floatList) << endl;
+//
+//	return 0;
+//}
+
+// EXO 4
 template <typename T>
-T sumElements(const vector<T>& liste)
+T moyenne(const vector<T>& tableau)
 {
-	return accumulate(liste.begin(), liste.end(), static_cast<T>(0));
+	T somme = 0;
+	for (const auto& element : tableau)
+	{
+		somme += element;
+	}
+	return somme / static_cast<T>(tableau.size());
+}
+
+template <typename>
+double moyenne(const vector<int>& tableau)
+{
+	int somme = 0;
+	for (const auto& element : tableau)
+	{
+		somme += element;
+	}
+	return static_cast<double>(somme) / tableau.size();
 }
 
 int main()
 {
-	vector<int> intList = { 1, 2, 3, 4, 5 };
-	vector<float> floatList = { 1.1f, 2.2f, 3.3f };
+	vector<int> tableauInt = { 1, 2, 3, 4, 5 };
+	vector<double> tableauDouble = { 1.5, 2.5, 3.5, 4.5, 5.5 };
 
-	cout << "Somme des entiers: " << sumElements(intList) << endl;
-	cout << "Somme des floats: " << sumElements(floatList) << endl;
+	cout << "Moyenne int: " << moyenne(tableauInt) << endl;
+	cout << "Moyenne double: " << moyenne(tableauDouble) << endl;
 
 	return 0;
 }
-
-// EXO 4
-template <typename T>
-T 
