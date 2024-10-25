@@ -21,7 +21,6 @@
 //Ajoutez une capacité maximale à l'inventaire (par exemple, 100 unités de poids). Si l'ajout d'un item dépasse cette capacité, le programme doit refuser l'ajout et afficher un message d'erreur.
 //Implémentez une fonction pour optimiser l'inventaire en retirant les items les moins lourds jusqu'à ce que le poids total soit inférieur à la capacité maximale.
 // InventorySystem.cpp : Ce fichier contient la fonction 'main'. L'exécution du programme commence et se termine à cet endroit.
-//
 
 #include <iostream>
 #include <vector>
